@@ -14,10 +14,6 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [formData, setFormData] = useState(initialFormState);
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-
   async function fetchNotes() {
     const apiData = await API.graphql({ query: listNotes });
     const notesFromAPI = apiData.data.listNotes.items;
@@ -33,8 +29,16 @@ function App() {
     setNotes(apiData.data.listNotes.items);
   }
 
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
   async function createNote() {
-    if (!formData.name || formData.description) return;
+    if (!formData.name || !formData.description) {
+      console.log("name", formData.name);
+      console.log("name", formData.description);
+      return;
+    }
     await API.graphql({
       query: createNoteMutation,
       variables: { input: formData },
@@ -81,7 +85,15 @@ function App() {
       />
       <input type="file" onChange={onChange} />
       <button onClick={createNote}>Create Note</button>
-      <div style={{ marginBottom: 30 }}>
+      <div
+        style={{
+          marginBottom: 30,
+          display: "flex",
+          "flex-direction": "row",
+          "flex-wrap": "wrap",
+          "justify-content": "center",
+        }}
+      >
         {notes.map((note) => (
           <div key={note.id || note.name}>
             <h2>{note.name}</h2>
